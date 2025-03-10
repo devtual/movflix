@@ -1,11 +1,9 @@
 import { AppSettings } from "../config/config";
 import { sleep } from "./common";
 import { IApiResponse } from "./types";
-import { Storage } from '../helpers/storage';
 
 export class ApiCall {
     private static instance: ApiCall;
-    public storage = Storage.getInstance();
     private constructor() {
         if (ApiCall.instance) {
             throw new Error("Error: Instantiation failed: Use ApiCall.getInstance() instead of new.");
