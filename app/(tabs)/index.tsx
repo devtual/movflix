@@ -1,47 +1,44 @@
 import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
-import { useFetch } from "@/hooks/useFetch";
+import { usePaginatedFetch } from "@/hooks/usePaginatedFetch";
 import { TMDB } from "@/services/tmdb";
-import React, { useState } from "react";
-import { View, FlatList, ActivityIndicator, StyleSheet, Text, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { View, FlatList, ActivityIndicator, StyleSheet, Text, ScrollView, Button, TouchableOpacity } from "react-native";
 
 const Home = () => {
     const tmdb = TMDB.getInstance();
-    const [searchQuery, setSearchQuery] = useState('');
+    const router = useRouter();
+    const [page, setPage] = useState(1);
+    const [loadingMore, setLoadingMore] = useState(false);
 
-    const {data: movies, loading } = useFetch(() => tmdb.fetchMovies(searchQuery), [searchQuery]);
-    const {data: tmovies, } = useFetch(() => tmdb.fetchTrendingMovies(), [searchQuery]);
+    const fetchMovies = useCallback(() => tmdb.getMovies("", page), [tmdb, page]);
+
+    const { data: movies, loading } = usePaginatedFetch(fetchMovies, setLoadingMore, [page]);
     
-
     if (loading) {
         return <ActivityIndicator size="large" color="#E50914" style={styles.loader} />;
     }
 
-    const keyExtractor = (item: any, index: number) => {
-      return item.id.toString() + index;
+    const keyExtractor = (item: any, index: number) => item.id.toString() + index;
+
+    const navigateToSearch = () => {
+        router.push("/search")
     }
 
-    const onChange = (txt: string) => {
-      setSearchQuery(txt);
-      console.log('txt', txt)
+    const getMoreMovies = () => {
+        setLoadingMore(true);
+        setPage(prevPage => prevPage + 1)      
     }
 
 
     return (
         <View style={styles.container}>
           <ScrollView showsVerticalScrollIndicator={false}>
-          {/* <FlatList
-                horizontal
-            
-                data={movies}
-                keyExtractor={keyExtractor}
-                
-                renderItem={({item}) => <MovieCard {...item} />}
-               
-                ListHeaderComponent={<SearchBar onChangeText={onChange}  />}
-            /> */}
-             <SearchBar onChangeText={onChange}  />
-             <Text>Latest Movies</Text>
+          <TouchableOpacity activeOpacity={1} onPress={navigateToSearch}>
+             <SearchBar onPress={navigateToSearch} editable={false} placeholder="Search through 300+ movies online"  />
+             <Text className="text-white my-4 text-lg">Latest Movies</Text>
+            </TouchableOpacity>
             <FlatList
                 data={movies}
                 keyExtractor={keyExtractor}
@@ -54,6 +51,12 @@ const Home = () => {
                   marginBottom: 20
                 }}
                 scrollEnabled={false}
+                ListFooterComponent={
+                    loadingMore ? (
+                        <ActivityIndicator size="small" color="#E50914" />
+                    ) : (
+                        <Button onPress={getMoreMovies} title="Load More" />
+                    )}
             />
             </ScrollView>
         </View>
@@ -63,9 +66,8 @@ const Home = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#121212",
-        padding: 16,
-        paddingBottom: 120
+        backgroundColor: "#030014",
+        padding: 16
     },
     loader: {
         flex: 1,

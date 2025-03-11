@@ -1,55 +1,53 @@
 import { ApiCall } from "@/helpers/apicall";
+import { IMovie } from "@/helpers/types";
 
 export class TMDB {
     private static instance: TMDB;
-    private readonly apicall: ApiCall;
+    private readonly apiCall: ApiCall;
 
-    private constructor(){
-        this.apicall = ApiCall.getInstance();
-
-        // if (TMDB.instance) {
-        //     throw new Error("Error: Instantiation failed: Use UserOrders.getInstance() instead of new.");
-        // }
+    private constructor() {
+        this.apiCall = ApiCall.getInstance();
     }
 
-    public static getInstance(): TMDB{
-
-        if(!TMDB.instance){
+    public static getInstance(): TMDB {
+        if (!TMDB.instance) {
             TMDB.instance = new TMDB();
         }
-
         return TMDB.instance;
     }
 
-    public async fetchMovies(query:string) {
+    public async getMovies(query: string = "", page: number = 1): Promise<IMovie[]> {
         try {
-            const endpoint = query ? `search/movie?query=${encodeURIComponent(query)}` : `discover/movie?sort_by=popularity.desc`
-            const response = await this.apicall.get(endpoint);
-            return response?.results || [];
+            const endpoint = query 
+                ? `search/movie?query=${encodeURIComponent(query)}`
+                : `discover/movie?page=${page}&sort_by=popularity.desc`;
+                
+            const response = await this.apiCall.get(endpoint);
+            return response?.results?.filter((movie: IMovie) => movie.poster_path) || [];
         } catch (error) {
-            console.error("Failed to fetch popular movies:", error);
+            console.error("Error fetching movies:", error);
             return [];
         }
     }
 
-    public async fetchTopRatedMovies(page:number = 1) {
+    public async getUpcomingMovies(page: number = 1): Promise<IMovie[]> {
         try {
-            const response = await this.apicall.get(`movie/upcoming?language=en-US&page=${page}`);
+            
+            const response = await this.apiCall.get(`movie/upcoming?language=en-US&page=${page}`);
             return response?.results || [];
         } catch (error) {
-            console.error("Failed to fetch popular movies:", error);
+            console.error("Error fetching upcoming movies:", error);
             return [];
         }
     }
 
-    public async fetchTrendingMovies() {
+    public async getTrendingMovies(): Promise<IMovie[]> {
         try {
-            const response = await this.apicall.get('trending/movie/day?language=en-US');
+            const response = await this.apiCall.get('trending/movie/day?language=en-US');
             return response?.results || [];
         } catch (error) {
-            console.error("Failed to fetch trending movies:", error);
+            console.error("Error fetching trending movies:", error);
             return [];
         }
     }
-
 }

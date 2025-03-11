@@ -33,11 +33,7 @@ export const screenOptions = ({ route }: ScreenOptionsProps): BottomTabNavigatio
   tabBarStyle: {
     borderTopWidth:0,
     backgroundColor: '#0F0D23',
-    marginHorizontal: 10,
-    height: 72,
-    position: 'absolute',
-    borderRadius: 24,
-    marginBottom: 36,
+    height: 76,
     elevation: 0,
     shadowColor: "transparent",
   } as ViewStyle,

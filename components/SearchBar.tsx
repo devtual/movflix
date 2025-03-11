@@ -1,56 +1,20 @@
 import React from 'react'
 import { View, TextInput, Image, StyleSheet, ViewStyle, TextStyle, StyleProp, TextInputProps } from 'react-native'
 
-interface Props extends TextInputProps {
-  formGroupStyle?: StyleProp<ViewStyle>;
-  formControlWrap?: StyleProp<ViewStyle | TextStyle>;
-  style?: StyleProp<TextStyle>;
-}
-
-const SearchBar = ({ formGroupStyle, style, ...props }: Props) => {
+const SearchBar = ({ ...props }: TextInputProps) => {
 
   return (
-    <View style={formGroupStyle}>
-      <View style={[styles.formControlWrap]}>
-        <View style={styles.formControlPrepend}>
-          {/* <Image source={newIcon?require('../assets/images/icons/search-normal-new.png' ):require('../assets/images/icons/search-normal.png')} /> */}
-        </View>
-        <TextInput
-          style={[styles.formControl]}
-          selectionColor="rgba(202, 206, 255, 0.6)"
-          autoCapitalize="none"
-          keyboardAppearance='dark'
-          underlineColorAndroid="transparent"
-          {...props}
-        />
-      </View>
+    <View className='flex-row bg-dark-500 rounded-full'>
+      {/* <Image source={require('../assets/images/icons/search-normal.png')} /> */}
+      <TextInput
+         placeholderTextColor="#A8B5DB"
+        autoCapitalize="none"
+        underlineColorAndroid="transparent"
+        className="flex-1 ml-2 text-white px-4"
+        {...props}
+      />
     </View>
   )
 }
 
 export default SearchBar
-
-const styles = StyleSheet.create({
-    formControlWrap: {
-        position: 'relative',
-        flexDirection: 'row',
-        display: 'flex',
-        borderRadius:50,
-        backgroundColor: '#fffff'
-    },
-    newFormControlWrap: {
-      borderWidth: 1.5,
-    },
-    formControl: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-        
-    },
-    newFormControl: {
-      flex: 1,
-      
-    },
-    formControlPrepend: {
-        justifyContent: 'center',
-    }
-  })
