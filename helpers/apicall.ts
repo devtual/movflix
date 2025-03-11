@@ -4,6 +4,7 @@ import { IApiResponse } from "./types";
 
 export class ApiCall {
     private static instance: ApiCall;
+
     private constructor() {
         if (ApiCall.instance) {
             throw new Error("Error: Instantiation failed: Use ApiCall.getInstance() instead of new.");
@@ -11,10 +12,10 @@ export class ApiCall {
     }
 
     public static getInstance() {
-        if (ApiCall.instance == null) {
+        if (!ApiCall.instance) {
             ApiCall.instance = new ApiCall();
         }
-        return this.instance;
+        return ApiCall.instance;
     }
 
     public async post(endpoint: string, body: object, shoudlEncrypt: boolean = false) {
@@ -132,19 +133,20 @@ export class ApiCall {
         
     }
 
-    public async get(endPoint: string, body: any) {
-        var headers: any = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        };
-        let httpResp = await fetch(AppSettings.apiEndpoint + endPoint,{
+    public async get(endPoint: string) {
+        const headers = {
+                accept: 'application/json',
+                Authorization: `Bearer ${AppSettings.apiKey}`
+            }
+        const httpResp = await fetch(AppSettings.apiEndpoint + endPoint,{
             method: 'GET',
             headers: headers
         });
+
         if(httpResp.status === 404){
             return this.responeMaker({Error: 'url not found on server'}, false);
         }
-        const response = await (httpResp).json();
-        
+        const response = await httpResp.json();
         return response;
     }
 }

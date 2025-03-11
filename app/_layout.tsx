@@ -4,27 +4,7 @@ import './global.css'
 const screenOptions = {
   headerShown: false,
   gestureEnabled: false,
-  cardShadowEnabled: false,
-  cardStyleInterpolator: ({ current, next, inverted, layouts: { screen }, closing }: any) => {
-    return {
-      cardStyle: {
-        transform: [
-          {
-            translateX: current.progress.interpolate({
-              inputRange: [0, 1],
-              outputRange: [screen.width, 0],
-            }),
-          },
-          {
-            translateX: next ? next.progress.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, -screen.width],
-            }) : 1,
-          },
-        ],
-      },
-    };
-  }
+  cardShadowEnabled: false
 }
 
 export default function RootLayout() {

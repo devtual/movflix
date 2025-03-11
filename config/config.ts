@@ -1,5 +1,6 @@
+
 export class AppSettings {
-    public static isStagingEnv =  process.env.IS_STAGING_ENV === "true";
-    public static apiEndpoint = process.env.API_ENDPOINT;
-    public static socketEndpoint = process.env.SOCKET_ENDPOINT;
+    public static isStagingEnv = process.env.EXPO_PUBLIC_IS_STAGING_ENV === "true";
+    public static apiEndpoint = process.env.EXPO_PUBLIC_API_ENDPOINT;
+    public static apiKey = process.env.EXPO_PUBLIC_API_KEY
 }
