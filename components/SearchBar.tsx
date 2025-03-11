@@ -1,20 +1,30 @@
-import React from 'react'
-import { View, TextInput, Image, StyleSheet, ViewStyle, TextStyle, StyleProp, TextInputProps } from 'react-native'
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import { View, TextInput, TextInputProps } from 'react-native';
 
-const SearchBar = ({ ...props }: TextInputProps) => {
+const SearchBar = forwardRef(({ ...props }: TextInputProps, ref) => {
+  const inputRef = useRef<TextInput>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current?.focus();
+    },
+    clear: () => {
+      inputRef.current?.clear();
+    }
+  }));
 
   return (
-    <View className='flex-row bg-dark-500 rounded-full'>
-      {/* <Image source={require('../assets/images/icons/search-normal.png')} /> */}
+    <View className="flex-row bg-dark-500 rounded-full">
       <TextInput
-         placeholderTextColor="#A8B5DB"
+        ref={inputRef}
+        placeholderTextColor="#A8B5DB"
         autoCapitalize="none"
         underlineColorAndroid="transparent"
         className="flex-1 ml-2 text-white px-4"
         {...props}
       />
     </View>
-  )
-}
+  );
+});
 
-export default SearchBar
+export default SearchBar;

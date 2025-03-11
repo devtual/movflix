@@ -2,21 +2,49 @@ import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
 import { useFetch } from "@/hooks/useFetch";
 import { TMDB } from "@/services/tmdb";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, FlatList, ActivityIndicator, StyleSheet, Text, ScrollView } from "react-native";
 
 const Search = () => {
     const tmdb = TMDB.getInstance();
     const [searchQuery, setSearchQuery] = useState('');
-    const {data: movies, loading } = useFetch(() => tmdb.getMovies(searchQuery), [searchQuery]);
-    
-    if (loading) {
-        return <View style={styles.container}><ActivityIndicator size="large" color="#E50914" style={styles.loader} /></View>
-    }
+    const fetchMovies = useCallback(() => tmdb.getMovies(searchQuery), [tmdb, searchQuery]);
+    const {data: movies, loading, error, fetchData, reset } = useFetch(fetchMovies, false);
+    const searchBarRef = useRef<{ focus: () => void; clear: () => void }>(null);
+
 
     const keyExtractor = (item: any, index: number) => {
       return item.id.toString() + index;
     }
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if(searchBarRef.current){
+                searchBarRef.current.focus();
+            }
+        }, 200)
+
+        return () => {
+            clearTimeout(timer);
+            setSearchQuery("");
+        };
+    }, [])
+
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            if (searchQuery.trim()) {
+                fetchData();
+            } else {
+                reset();
+            }
+        }, 500);
+    
+        return () => {
+            clearTimeout(handler);
+        };
+    
+    }, [searchQuery]);
 
     const onChange = (txt: string) => {
       setSearchQuery(txt);
@@ -24,25 +52,32 @@ const Search = () => {
 
 
     return (
-        <View style={styles.container}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-             <SearchBar onChangeText={onChange} placeholder="Search through 300+ movies online"  />
-             <Text className="text-white my-4 text-lg">Latest Movies</Text>
-            <FlatList
-                data={movies}
-                keyExtractor={keyExtractor}
-                numColumns={3}
-                renderItem={({item}) => <MovieCard {...item} />}
-                columnWrapperStyle={{
-                  justifyContent: 'flex-start',
-                  gap: 20,
-                  paddingRight: 5,
-                  marginBottom: 20
-                }}
-                scrollEnabled={false}
-            />
+       
+          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+            <SearchBar ref={searchBarRef} onChangeText={onChange} placeholder="Search through 300+ movies online"  />
+            {loading && <ActivityIndicator size="large" color="#E50914" style={styles.loader} />}
+            {!loading && <React.Fragment>
+                    <Text className="text-white my-4 text-lg">Searh Result: {searchQuery}</Text>
+                    <FlatList
+                        data={movies}
+                        keyExtractor={keyExtractor}
+                        numColumns={3}
+                        renderItem={({item}) => <MovieCard {...item} />}
+                        columnWrapperStyle={{
+                        justifyContent: 'flex-start',
+                        gap: 20
+                        }}
+                        scrollEnabled={false}
+                        ListEmptyComponent={
+                            !loading && !error ? (<View className="mt-4">
+                                <Text className="text-light-400 text-center">{searchQuery.trim() ? "No movies found" : "Search for a movie"}</Text>
+                            </View>) : null
+                        }
+                    />
+                </React.Fragment>
+            }
             </ScrollView>
-        </View>
+       
     );
 };
 
@@ -50,6 +85,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#030014",
+    },
+    contentContainer: {
         padding: 16
     },
     loader: {
