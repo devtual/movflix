@@ -2,10 +2,6 @@ import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { Text, TouchableOpacity, ViewStyle } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-type Route = { name: string };
-
-type ScreenOptionsProps = { route: Route };
-
 const getTabBarButton = (props:any) => {
   const icons: Record<string, keyof typeof AntDesign.glyphMap> = {
     Home: "home",
@@ -23,7 +19,7 @@ const getTabBarButton = (props:any) => {
   </TouchableOpacity>
 }
 
-export const screenOptions = ({ route }: ScreenOptionsProps): BottomTabNavigationOptions => ({
+export const screenOptions = () : BottomTabNavigationOptions => ({
   headerShown: false,
   tabBarShowLabel: false,
   tabBarActiveTintColor: '#1E90FF',

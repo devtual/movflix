@@ -33,8 +33,8 @@ const Home = () => {
 
 
     return (
-        <View style={styles.container}>
-          <ScrollView showsVerticalScrollIndicator={false}>
+        
+          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
           <TouchableOpacity activeOpacity={1} onPress={navigateToSearch}>
              <SearchBar onPress={navigateToSearch} editable={false} placeholder="Search through 300+ movies online"  />
              <Text className="text-white my-4 text-lg">Latest Movies</Text>
@@ -46,9 +46,7 @@ const Home = () => {
                 renderItem={({item}) => <MovieCard {...item} />}
                 columnWrapperStyle={{
                   justifyContent: 'flex-start',
-                  gap: 20,
-                  paddingRight: 5,
-                  marginBottom: 20
+                  gap: 20
                 }}
                 scrollEnabled={false}
                 ListFooterComponent={
@@ -61,14 +59,16 @@ const Home = () => {
                     )}
             />
             </ScrollView>
-        </View>
+        
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#030014",
+        backgroundColor: "#030014"
+    },
+    contentContainer: {
         padding: 16
     },
     loader: {

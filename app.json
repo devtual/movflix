@@ -8,6 +8,11 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "backgroundColor": "#030014",
+    "splash": {
+      "resizeMode": "cover",
+      "backgroundColor": "#030014"
+    },
     "ios": {
       "supportsTablet": true
     },

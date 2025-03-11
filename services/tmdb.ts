@@ -22,7 +22,7 @@ export class TMDB {
                 ? `search/movie?query=${encodeURIComponent(query)}`
                 : `discover/movie?page=${page}&sort_by=popularity.desc`;
                 
-            const response = await this.apiCall.get(endpoint);
+                const response = await this.apiCall.get(endpoint);
             return response?.results?.filter((movie: IMovie) => movie.poster_path) || [];
         } catch (error) {
             console.error("Error fetching movies:", error);
