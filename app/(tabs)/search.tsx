@@ -11,7 +11,7 @@ const Search = () => {
     const {data: movies, loading } = useFetch(() => tmdb.getMovies(searchQuery), [searchQuery]);
     
     if (loading) {
-        return <ActivityIndicator size="large" color="#E50914" style={styles.loader} />;
+        return <View style={styles.container}><ActivityIndicator size="large" color="#E50914" style={styles.loader} /></View>
     }
 
     const keyExtractor = (item: any, index: number) => {
@@ -49,9 +49,8 @@ const Search = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#121212",
-        padding: 16,
-        paddingBottom: 120
+        backgroundColor: "#030014",
+        padding: 16
     },
     loader: {
         flex: 1,

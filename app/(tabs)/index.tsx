@@ -4,7 +4,7 @@ import { usePaginatedFetch } from "@/hooks/usePaginatedFetch";
 import { TMDB } from "@/services/tmdb";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, FlatList, ActivityIndicator, StyleSheet, Text, ScrollView, Button, TouchableOpacity } from "react-native";
+import { View, FlatList, ActivityIndicator, StyleSheet, Text, ScrollView, Button, TouchableOpacity, Pressable } from "react-native";
 
 const Home = () => {
     const tmdb = TMDB.getInstance();
@@ -17,7 +17,7 @@ const Home = () => {
     const { data: movies, loading } = usePaginatedFetch(fetchMovies, setLoadingMore, [page]);
     
     if (loading) {
-        return <ActivityIndicator size="large" color="#E50914" style={styles.loader} />;
+        return <View style={styles.container}><ActivityIndicator size="large" color="#E50914" style={styles.loader} /></View>
     }
 
     const keyExtractor = (item: any, index: number) => item.id.toString() + index;
@@ -54,8 +54,10 @@ const Home = () => {
                 ListFooterComponent={
                     loadingMore ? (
                         <ActivityIndicator size="small" color="#E50914" />
-                    ) : (
-                        <Button onPress={getMoreMovies} title="Load More" />
+                    ) : (              
+            <TouchableOpacity activeOpacity={0.95} className="bg-primary-400 justify-center items-center h-14 rounded-full" onPress={getMoreMovies}>
+                <Text className="text-white text-lg">Load More</Text>
+            </TouchableOpacity>
                     )}
             />
             </ScrollView>
