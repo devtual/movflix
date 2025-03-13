@@ -1,6 +1,8 @@
-import { Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import './global.css'
 import { Easing } from "react-native-reanimated";
+import { useStartup } from "@/hooks/useStartup";
+import { useEffect } from "react";
 
 const screenOptions:any = {
   headerShown: false,
@@ -43,8 +45,20 @@ const screenOptions:any = {
 }
 
 export default function RootLayout() {
+  const [loaded] = useStartup();
+
+  useEffect(() => {
+      if (loaded) {
+        SplashScreen.hideAsync();
+      }
+  }, [loaded]);
+  
+  if (!loaded) {
+    return null;
+  }
+
   return <Stack screenOptions={screenOptions}>
     <Stack.Screen name="(tabs)" />
     <Stack.Screen name="movies/[id]" />
-  </Stack>;
+  </Stack>
 }

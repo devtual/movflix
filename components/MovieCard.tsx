@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { IMovie } from '@/helpers/types'
 import { Link, useRouter } from 'expo-router'
 import SkeletonLoader from './SkeletionLoader'
+import { fontSizes } from '@/helpers/theme'
 
 const MovieCard = (item: IMovie) => {
   return (
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
     title: {
         marginTop: 8,
         color: "#FFF",
-        fontSize: 16,
+        fontSize: fontSizes(12),
         fontWeight: 500
     },
 })
