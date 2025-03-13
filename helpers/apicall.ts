@@ -44,27 +44,27 @@ export class ApiCall {
             });
 
             if(httpResp.status === 404){
-                return this.responeMaker({Error: 'url not found on server'}, false);
+                return this.responseMaker({Message: 'url not found on server'}, false);
             }
             const response = await (httpResp).json();
 
             if (httpResp.status >= 400 && httpResp.status < 600) {
                 if (httpResp.status === 401) {
                     // this.user.logout();
-                return this.responeMaker(response, false);
+                return this.responseMaker(response, false);
 
                 } else if (!response.Status) {
-                    return this.responeMaker(response, false);
+                    return this.responseMaker(response, false);
                 }
 
-                return this.responeMaker(response, false);
+                return this.responseMaker(response, false);
             }
             else {
-                return this.responeMaker(response, true);
+                return this.responseMaker(response, true);
             }
         } catch (err:any) {
-          let error = {Error: err?.message};
-            return this.responeMaker((error) , false);
+          let error = {Message: err?.message};
+            return this.responseMaker((error) , false);
         }
     }
     
@@ -82,11 +82,11 @@ export class ApiCall {
             })
             
             if(httpResp.status === 404){
-                return this.responeMaker({Error: 'url not found on server'}, false);
+                return this.responseMaker({Message: 'url not found on server'}, false);
             }
 
             if(httpResp.status === 204){
-                return this.responeMaker({Error: ''}, false);
+                return this.responseMaker({Message: ''}, false);
             }
 
             const response = await (httpResp).json();
@@ -96,58 +96,65 @@ export class ApiCall {
                     // this.user.logout();
                     return;
                 } else if (!response.Status) {
-                    return this.responeMaker(response, false);
+                    return this.responseMaker(response, false);
                 }
 
-                return this.responeMaker(response, false);
+                return this.responseMaker(response, false);
 
             }
             if (response.Status === false && response.Message === "IR" && isAuthenticated && retry) {
                 await sleep(1000);
                 return await this._post(endpoint, body, shoudlEncrypt, isAuthenticated, false);
             } else {
-                return this.responeMaker(response, true);
+                return this.responseMaker(response, true);
             }
         } catch (err:any) {
-            let error = {Error: err?.message};
-            return this.responeMaker((error) , false);
+            let error = {Message: err?.message};
+            return this.responseMaker((error) , false);
         }
     }
 
-    public responeMaker(response:any, isOk: any) {
-        let res: IApiResponse = {};
-        if(isOk){
-            res = {
-                Status: true,
-                Message:'success',
-                Result: response,
-            };
-        } else {
-            res = {
-                Status: false,
-                Message:response.Error,
-                Result: null,
-            };
+    public responseMaker(response:any, success: boolean) : IApiResponse {
+        return {
+            Status: success,
+            Message: success ? 'success' : response.Message,
+            Result: success ? response : null,
         }
-        return res;
-        
     }
 
-    public async get(endPoint: string) {
+    public async get(endPoint: string): Promise<IApiResponse> {
         const headers = {
-                accept: 'application/json',
-                Authorization: `Bearer ${AppSettings.apiKey}`
-            }
-        const httpResp = await fetch(AppSettings.apiEndpoint + endPoint,{
-            method: 'GET',
-            headers: headers
-        });
-
-        if(httpResp.status === 404){
-            return this.responeMaker({Error: 'url not found on server'}, false);
+            accept: 'application/json',
+            Authorization: `Bearer ${AppSettings.apiKey}`
         }
-        const response = await httpResp.json();
-        return response;
+
+        try {
+            const httpResp = await fetch(AppSettings.apiEndpoint + endPoint,{
+                method: 'GET',
+                headers: headers
+            });
+
+            console.log('Get endpoint call', httpResp.status, endPoint);
+
+            if(httpResp.status === 404){
+                return this.responseMaker({Message: 'Url not found on server'}, false);
+            }
+            
+            const response = await httpResp.json();
+            return this.responseMaker(response, true);
+        } catch (err: any) {
+            const error = {Message: ''};
+            
+            if(err instanceof Error){
+                error.Message = err.message
+            } else {
+                error.Message = JSON.stringify(err)
+            }
+
+            console.log(`Error fetching data ${err.Message}`);
+
+            return this.responseMaker(error, false);
+        }
     }
 }
 

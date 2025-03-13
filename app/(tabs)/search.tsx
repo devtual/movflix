@@ -2,6 +2,7 @@ import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
 import { useFetch } from "@/hooks/useFetch";
 import { TMDB } from "@/services/tmdb";
+import { useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, FlatList, ActivityIndicator, StyleSheet, Text, ScrollView } from "react-native";
 
@@ -17,22 +18,27 @@ const Search = () => {
       return item.id.toString() + index;
     }
 
+    useFocusEffect(
+        useCallback(() => {
+            const timer = setTimeout(() => {
+                if(searchBarRef.current){
+                    searchBarRef.current.focus();
+                }
+            }, 50)
+            
+            return () => {
+                if(searchBarRef.current){
+                    searchBarRef.current.clear();
+                    setSearchQuery("");
+                }
+                clearTimeout(timer);
+            };
+        }, [])
+    );
+
+
     useEffect(() => {
         const timer = setTimeout(() => {
-            if(searchBarRef.current){
-                searchBarRef.current.focus();
-            }
-        }, 200)
-
-        return () => {
-            clearTimeout(timer);
-            setSearchQuery("");
-        };
-    }, [])
-
-
-    useEffect(() => {
-        const handler = setTimeout(() => {
             if (searchQuery.trim()) {
                 fetchData();
             } else {
@@ -41,7 +47,7 @@ const Search = () => {
         }, 500);
     
         return () => {
-            clearTimeout(handler);
+            clearTimeout(timer);
         };
     
     }, [searchQuery]);
